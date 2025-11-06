@@ -257,4 +257,5 @@ scripts/investigate_*.py
 scripts/test_sync_specific_date.py
 
 # Additional test workspace patterns
-.test-workspace-*/
+.test-workspace-*/node_modules/
+node_modules/

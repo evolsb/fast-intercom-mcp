@@ -3,7 +3,15 @@
 import asyncio
 import os
 import tempfile
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
+
+try:
+    from datetime import UTC
+except ImportError:
+    # Python < 3.11 compatibility
+    from datetime import timezone
+
+    UTC = timezone.utc
 from unittest.mock import AsyncMock, Mock
 
 import pytest

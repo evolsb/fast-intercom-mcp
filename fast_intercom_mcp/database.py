@@ -4,7 +4,15 @@ import json
 import logging
 import os
 import sqlite3
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
+
+try:
+    from datetime import UTC
+except ImportError:
+    # Python < 3.11 compatibility
+    from datetime import timezone
+
+    UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 
@@ -446,6 +454,17 @@ class DatabaseManager:
             conn.commit()
 
         return stored_count
+
+    def upsert_conversation(self, conversation: Conversation) -> int:
+        """Store or update a single conversation in database.
+
+        Args:
+            conversation: Conversation to store/update
+
+        Returns:
+            Number of conversations actually stored/updated (0 or 1)
+        """
+        return self.store_conversations([conversation])
 
     def _store_messages(
         self, conn: sqlite3.Connection, messages: list[Message], conversation_id: str
