@@ -111,7 +111,7 @@ def start(ctx):
     # Initialize components
     db = DatabaseManager(config.database_path, config.connection_pool_size)
     intercom_client = IntercomClient(config.intercom_token, config.api_timeout_seconds)
-    
+
     # Create basic MCP server (no complex sync service)
     server = FastIntercomMCPServer(db, None, intercom_client)
 

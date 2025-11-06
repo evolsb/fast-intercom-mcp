@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class OptimizationConfig:
     """Configuration for API optimization - simplified stub."""
-    
+
     cache_enabled: bool = False
     request_batching: bool = False
     connection_pooling: bool = True
@@ -20,11 +20,11 @@ class OptimizationConfig:
 
 class APIOptimizer:
     """Simplified API optimizer - stub implementation."""
-    
+
     def __init__(self, config: OptimizationConfig | None = None):
         self.config = config or OptimizationConfig()
         logger.debug("APIOptimizer initialized with simplified implementation")
-    
+
     async def make_request(
         self,
         method: str,
@@ -38,7 +38,7 @@ class APIOptimizer:
     ) -> Any:
         """Make a simple HTTP request without optimization."""
         logger.debug(f"Making {method} request to {url} (simplified - no optimization)")
-        
+
         async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.request(
                 method=method,
@@ -48,7 +48,7 @@ class APIOptimizer:
             )
             response.raise_for_status()
             return response.json()
-    
+
     def get_performance_stats(self) -> dict[str, Any]:
         """Return stub performance stats."""
         return {
@@ -63,7 +63,7 @@ class APIOptimizer:
                 "Running in simplified mode - full optimization features not available"
             ],
         }
-    
+
     async def close(self):
         """Cleanup method - stub implementation."""
         logger.debug("APIOptimizer cleanup completed (simplified mode)")

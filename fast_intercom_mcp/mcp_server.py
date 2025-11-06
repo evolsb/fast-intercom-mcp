@@ -134,7 +134,7 @@ class FastIntercomMCPServer:
         for conv in conversations:
             messages_preview = conv.messages[:3]  # Show first 3 messages
             preview_text = "\n".join([f"  {msg.author}: {msg.body[:100]}..." for msg in messages_preview])
-            
+
             customer_info = "Unknown"
             if conv.customer_email:
                 customer_info = conv.customer_email
@@ -156,19 +156,19 @@ class FastIntercomMCPServer:
             results.append(result_text.strip())
 
         response_text = f"Found {len(conversations)} conversations:\n\n" + "\n\n".join(results)
-        
+
         return [TextContent(type="text", text=response_text)]
 
     async def _get_conversation(self, args: dict[str, Any]) -> list[TextContent]:
         """Get full details of a specific conversation."""
         conversation_id = args.get("conversation_id")
-        
+
         if not conversation_id:
             return [TextContent(type="text", text="Error: conversation_id is required")]
 
         # Get conversation from database
         conversation = self.db.get_conversation(conversation_id)
-        
+
         if not conversation:
             return [TextContent(type="text", text=f"Conversation {conversation_id} not found")]
 
@@ -203,7 +203,7 @@ class FastIntercomMCPServer:
         """Get server status and statistics."""
         try:
             status = self.db.get_sync_status()
-            
+
             status_text = f"""
 **FastIntercom Server Status**
 
@@ -220,7 +220,7 @@ class FastIntercomMCPServer:
 - Transport: stdio
 - Status: Running
 """
-            
+
             return [TextContent(type="text", text=status_text.strip())]
         except Exception as e:
             return [TextContent(type="text", text=f"Error getting status: {str(e)}")]
@@ -229,26 +229,24 @@ class FastIntercomMCPServer:
         """Parse timeframe string into start and end dates."""
         if not timeframe:
             return None, None
-            
+
         now = datetime.now()
         timeframe = timeframe.lower().strip()
-        
+
         try:
             if "last" in timeframe and "day" in timeframe:
                 if "7" in timeframe or "week" in timeframe:
                     return now - timedelta(days=7), now
-                elif "30" in timeframe:
+                if "30" in timeframe:
                     return now - timedelta(days=30), now
-                else:
-                    return now - timedelta(days=1), now
-            elif "this month" in timeframe:
+                return now - timedelta(days=1), now
+            if "this month" in timeframe:
                 start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
                 return start_of_month, now
-            elif "last week" in timeframe:
+            if "last week" in timeframe:
                 return now - timedelta(days=7), now
-            else:
-                # Default to last 7 days for unrecognized timeframes
-                return now - timedelta(days=7), now
+            # Default to last 7 days for unrecognized timeframes
+            return now - timedelta(days=7), now
         except Exception:
             # Fallback
             return now - timedelta(days=7), now
@@ -262,8 +260,8 @@ class FastIntercomMCPServer:
 
     async def _list_tools(self) -> list[Tool]:
         """List tools for external access."""
-        return await self.server._list_tools()
+        return self.server.list_tools()
 
     async def _call_tool(self, name: str, arguments: dict[str, Any]) -> list[TextContent]:
         """Call tool for external access."""
-        return await self.server._call_tool(name, arguments)
+        return self.server.call_tool(name, arguments)

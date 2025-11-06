@@ -60,7 +60,7 @@ class SyncPeriod:
 @dataclass
 class SyncStats:
     """Statistics from a sync operation."""
-    
+
     total_conversations: int = 0
     new_conversations: int = 0
     updated_conversations: int = 0

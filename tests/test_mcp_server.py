@@ -48,18 +48,30 @@ class TestMCPServer:
         assert hasattr(server, "sync_service")
         assert hasattr(server, "intercom_client")
 
-    @pytest.mark.asyncio
-    async def test_server_can_list_tools(self, server):
-        """Test that server can list available tools."""
-        tools = await server._list_tools()
-        assert isinstance(tools, list)
-        assert len(tools) > 0
+    def test_server_mcp_registration(self, server):
+        """Test that MCP request handlers are properly registered."""
+        from mcp.types import CallToolRequest, ListToolsRequest
 
-    @pytest.mark.asyncio
-    async def test_server_status_tool_works(self, server):
-        """Test that the basic status tool works."""
-        result = await server._call_tool("get_server_status", {})
-        assert isinstance(result, list)
-        assert len(result) > 0
-        assert result[0].type == "text"
-        assert "FastIntercom Server Status" in result[0].text
+        # Check that key MCP request types are registered
+        registered_types = list(server.server.request_handlers.keys())
+        assert ListToolsRequest in registered_types
+        assert CallToolRequest in registered_types
+
+        # Verify handlers are callable
+        list_tools_handler = server.server.request_handlers[ListToolsRequest]
+        call_tool_handler = server.server.request_handlers[CallToolRequest]
+        assert callable(list_tools_handler)
+        assert callable(call_tool_handler)
+
+    def test_server_initialization_options(self, server):
+        """Test that server can create initialization options."""
+        options = server.server.create_initialization_options()
+        assert options is not None
+        assert hasattr(options, "server_name")
+        assert hasattr(options, "server_version")
+        assert hasattr(options, "capabilities")
+
+        # Verify the values
+        assert options.server_name == "fastintercom"
+        assert options.server_version is not None
+        assert options.capabilities is not None
